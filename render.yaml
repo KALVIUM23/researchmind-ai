@@ -2,13 +2,11 @@ services:
   - type: web
     name: researchmind-ai
     runtime: python
-    pythonVersion: 3.11.10
-    buildCommand: cd backend && pip install --upgrade pip setuptools wheel && pip install -r requirements.txt
-    startCommand: cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port 8080
+    buildCommand: pip install --upgrade pip setuptools wheel && pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port 8080
+    workingDirectory: backend
     envVars:
-      - key: PYTHONPATH
-        value: /backend
-      - key: PORT
-        value: 8080
       - key: PYTHONUNBUFFERED
         value: 1
+      - key: PORT
+        value: 8080
