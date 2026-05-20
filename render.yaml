@@ -3,8 +3,7 @@ services:
     name: researchmind-ai
     runtime: python
     buildCommand: pip install --upgrade pip setuptools && pip install -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port 8080
-    workingDirectory: backend
+    startCommand: cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port 8080
     envVars:
       - key: PYTHONUNBUFFERED
         value: 1
