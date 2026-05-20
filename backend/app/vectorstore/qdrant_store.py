@@ -70,23 +70,21 @@ class VectorStoreService:
             
             if self.collection_name not in collection_names:
                 logger.info(f"Creating collection: {self.collection_name}")
+                # Simple collection creation compatible with Qdrant Cloud
                 self.client.create_collection(
                     collection_name=self.collection_name,
                     vectors_config=VectorParams(
                         size=self.embedding_dim,
                         distance=Distance.COSINE
-                    ),
-                    # Optimize for performance
-                    optimizers_config={
-                        "default": {
-                            "enabled": True
-                        }
-                    },
+                    )
                 )
-                logger.info(f"✅ Collection '{self.collection_name}' created successfully")
+                logger.info(f"[OK] Collection '{self.collection_name}' created successfully")
+            else:
+                logger.info(f"[OK] Collection '{self.collection_name}' already exists")
         except Exception as e:
             logger.error(f"Error ensuring collection exists: {str(e)}")
-            raise
+            # Don't fail - collection might already exist
+            logger.info(f"Continuing without creating collection (it may already exist)")
     
     def add_chunks(self, chunks: List[Dict[str, Any]], embeddings: List[List[float]]) -> List[str]:
         """
@@ -142,7 +140,7 @@ class VectorStoreService:
             
             self.stats.total_insertions += len(points)
             self.stats.total_vectors_stored += len(points)
-            logger.info(f"✅ Added {len(points)} chunks to vector store")
+            logger.info(f"[OK] Added {len(points)} chunks to vector store")
             return point_ids
             
         except Exception as e:
@@ -180,7 +178,7 @@ class VectorStoreService:
                 
                 self.stats.batch_operations += 1
             
-            logger.info(f"✅ Batch insertion complete: {len(all_point_ids)} total vectors stored")
+            logger.info(f"[OK] Batch insertion complete: {len(all_point_ids)} total vectors stored")
             return all_point_ids
             
         except Exception as e:
@@ -205,9 +203,9 @@ class VectorStoreService:
             List of retrieved chunks with scores and metadata
         """
         try:
-            results = self.client.search(
+            results = self.client.query_points(
                 collection_name=self.collection_name,
-                query_vector=query_embedding,
+                query=query_embedding,
                 limit=top_k,
                 score_threshold=score_threshold,
                 with_payload=True,
@@ -215,7 +213,7 @@ class VectorStoreService:
             )
             
             retrieved = []
-            for result in results:
+            for result in results.points:
                 retrieved.append({
                     "id": result.id,
                     "text": result.payload.get("text", ""),
@@ -232,8 +230,8 @@ class VectorStoreService:
                 })
             
             self.stats.total_searches += 1
-            top_score = results[0].score if results else 0.0
-            logger.info(f"✅ Retrieved {len(retrieved)} chunks, top score: {top_score:.3f}")
+            top_score = results.points[0].score if results.points else 0.0
+            logger.info(f"[OK] Retrieved {len(retrieved)} chunks, top score: {top_score:.3f}")
             return retrieved
             
         except Exception as e:
@@ -273,9 +271,9 @@ class VectorStoreService:
             
             filter_obj = Filter(must=conditions) if conditions else None
             
-            results = self.client.search(
+            results = self.client.query_points(
                 collection_name=self.collection_name,
-                query_vector=query_embedding,
+                query=query_embedding,
                 query_filter=filter_obj,
                 limit=top_k,
                 score_threshold=score_threshold,
@@ -284,7 +282,7 @@ class VectorStoreService:
             )
             
             retrieved = []
-            for result in results:
+            for result in results.points:
                 retrieved.append({
                     "id": result.id,
                     "text": result.payload.get("text", ""),
@@ -298,7 +296,7 @@ class VectorStoreService:
                     }
                 })
             
-            logger.info(f"✅ Retrieved {len(retrieved)} filtered chunks, filters: {filters}")
+            logger.info(f"[OK] Retrieved {len(retrieved)} filtered chunks, filters: {filters}")
             return retrieved
             
         except Exception as e:
@@ -324,7 +322,7 @@ class VectorStoreService:
                 )
             )
             self.stats.total_deletions += 1
-            logger.info(f"✅ Deleted chunks for document: {document_id}")
+            logger.info(f"[OK] Deleted chunks for document: {document_id}")
             return 1  # Return count of operation (Qdrant API)
         except Exception as e:
             logger.error(f"Error deleting chunks by document: {str(e)}")
@@ -357,7 +355,7 @@ class VectorStoreService:
                 points_selector=filter_obj
             )
             self.stats.total_deletions += 1
-            logger.info(f"✅ Deleted chunks matching filters: {metadata_filter}")
+            logger.info(f"[OK] Deleted chunks matching filters: {metadata_filter}")
             return 1
         except Exception as e:
             logger.error(f"Error deleting chunks by metadata: {str(e)}")
@@ -390,7 +388,7 @@ class VectorStoreService:
             )
             
             self.stats.total_insertions += len(point_objects)
-            logger.info(f"✅ Upserted {len(point_objects)} points")
+            logger.info(f"[OK] Upserted {len(point_objects)} points")
             return [str(p.id) for p in point_objects]
             
         except Exception as e:
@@ -471,7 +469,7 @@ class VectorStoreService:
             
             # Reset statistics
             self.stats = VectorStoreStatistics()
-            logger.info("✅ Collection recreated empty")
+            logger.info("[OK] Collection recreated empty")
             return True
         except Exception as e:
             logger.error(f"Error clearing collection: {str(e)}")

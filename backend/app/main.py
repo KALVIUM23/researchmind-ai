@@ -49,12 +49,21 @@ async def lifespan(app: FastAPI):
             model_name=settings.embedding_model
         )
         
-        vector_store = VectorStoreService(
-            url=settings.qdrant_url,
-            api_key=settings.qdrant_api_key,
-            collection_name=settings.qdrant_collection_name,
-            embedding_dim=embeddings_service.get_embedding_dimension()
-        )
+        # Try to connect to Qdrant, but don't fail if unavailable
+        vector_store = None
+        try:
+            vector_store = VectorStoreService(
+                url=settings.qdrant_url,
+                api_key=settings.qdrant_api_key,
+                collection_name=settings.qdrant_collection_name,
+                embedding_dim=embeddings_service.get_embedding_dimension()
+            )
+            logger.info("[OK] Qdrant vector store connected successfully")
+        except Exception as qdrant_error:
+            logger.error(f"[ERROR] Qdrant initialization error: {type(qdrant_error).__name__}: {str(qdrant_error)}")
+            logger.warning(f"[WARN] Vector store unavailable - RAG features will be disabled until restart")
+            # Continue without vector store
+            vector_store = None
         
         retrieval_service = RetrievalService(
             embeddings_service=embeddings_service,
@@ -147,6 +156,7 @@ def create_app() -> FastAPI:
     app.dependency_overrides[documents.get_document_service] = get_document_service
     app.dependency_overrides[documents.get_document_store] = get_document_store
     app.dependency_overrides[documents.get_vector_store] = get_vector_store
+    app.dependency_overrides[questions.get_vector_store] = get_vector_store
     app.dependency_overrides[questions.get_answer_service] = get_answer_service
     
     # Register routers

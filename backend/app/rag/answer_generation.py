@@ -70,7 +70,7 @@ Always indicate which information comes from the provided documents."""
             self.model_name = model_name
             self.grounding_level = grounding_level
             self.metrics = AnswerGenerationMetrics()
-            logger.info(f"✅ Initialized Gemini model: {model_name}, grounding: {grounding_level}")
+            logger.info(f"[OK] Initialized Gemini model: {model_name}, grounding: {grounding_level}")
         except Exception as e:
             logger.error(f"Error initializing Gemini: {str(e)}")
             raise
