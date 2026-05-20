@@ -12,6 +12,7 @@ All environment variables are loaded here to ensure:
 from pydantic_settings import BaseSettings
 from functools import lru_cache
 import os
+from pathlib import Path
 
 
 class Settings(BaseSettings):
@@ -59,7 +60,8 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     
     class Config:
-        env_file = ".env"
+        # Use absolute path to .env file
+        env_file = str(Path(__file__).parent.parent.parent / ".env")
         case_sensitive = False
         extra = "allow"  # Allow extra fields
     
