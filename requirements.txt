@@ -6,10 +6,9 @@ uvicorn[standard]==0.24.0
 python-dotenv==1.0.0
 pydantic==2.4.2
 
-# PDF Processing & Document Parsing
+# PDF Processing
 PyPDF2==3.0.1
 pypdf==3.17.1
-pymupdf==1.23.8
 
 # Generative AI
 google-generativeai==0.5.4
@@ -18,7 +17,7 @@ google-generativeai==0.5.4
 sentence-transformers==2.7.0
 qdrant-client==1.18.0
 
-# HTTP & Async Support
+# HTTP & Async
 requests==2.31.0
 aiofiles==23.2.1
 python-multipart==0.0.6

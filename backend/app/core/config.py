@@ -9,12 +9,18 @@ All environment variables are loaded here to ensure:
 - Easy deployment across environments
 """
 
-from pydantic_settings import BaseSettings
 from functools import lru_cache
 import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Load .env file
+env_file = Path(__file__).parent.parent.parent / ".env"
+if env_file.exists():
+    load_dotenv(env_file)
 
 
-class Settings(BaseSettings):
+class Settings:
     """
     Application Settings
     
@@ -22,49 +28,43 @@ class Settings(BaseSettings):
     Environment variables override defaults.
     """
     
-    # Application
-    app_name: str = "ResearchMind AI"
-    debug: bool = True
-    environment: str = "development"  # development, staging, production
-    
-    # API Configuration
-    host: str = "0.0.0.0"
-    port: int = 8000
-    
-    # Gemini API
-    gemini_api_key: str = ""
-    gemini_model: str = "gemini-pro"
-    
-    # Qdrant Vector Database
-    qdrant_url: str = "http://localhost:6333"
-    qdrant_api_key: str = ""
-    qdrant_collection_name: str = "researchmind"
-    
-    # Text Processing
-    chunk_size: int = 1000
-    chunk_overlap: int = 200
-    
-    # File Upload
-    max_file_size: int = 52428800  # 50MB in bytes
-    upload_directory: str = "uploads"
-    
-    # Embeddings
-    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
-    embedding_dimension: int = 384
-    
-    # Retrieval
-    retrieval_top_k: int = 5
-    
-    # Logging
-    log_level: str = "INFO"
-    
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
-        extra = "allow"  # Allow extra fields
-    
-    def __init__(self, **data):
-        super().__init__(**data)
+    def __init__(self):
+        # Application
+        self.app_name = os.getenv("APP_NAME", "ResearchMind AI")
+        self.debug = os.getenv("DEBUG", "true").lower() == "true"
+        self.environment = os.getenv("ENVIRONMENT", "development")
+        
+        # API Configuration
+        self.host = os.getenv("HOST", "0.0.0.0")
+        self.port = int(os.getenv("PORT", "8000"))
+        
+        # Gemini API
+        self.gemini_api_key = os.getenv("GEMINI_API_KEY", "")
+        self.gemini_model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+        
+        # Qdrant Vector Database
+        self.qdrant_url = os.getenv("QDRANT_URL", "http://localhost:6333")
+        self.qdrant_api_key = os.getenv("QDRANT_API_KEY", "")
+        self.qdrant_collection_name = os.getenv("QDRANT_COLLECTION_NAME", "researchmind")
+        
+        # Text Processing
+        self.chunk_size = int(os.getenv("CHUNK_SIZE", "1000"))
+        self.chunk_overlap = int(os.getenv("CHUNK_OVERLAP", "200"))
+        
+        # File Upload
+        self.max_file_size = int(os.getenv("MAX_FILE_SIZE", "52428800"))  # 50MB in bytes
+        self.upload_directory = os.getenv("UPLOAD_DIRECTORY", "uploads")
+        
+        # Embeddings
+        self.embedding_model = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+        self.embedding_dimension = int(os.getenv("EMBEDDING_DIMENSION", "384"))
+        
+        # Retrieval
+        self.retrieval_top_k = int(os.getenv("RETRIEVAL_TOP_K", "5"))
+        
+        # Logging
+        self.log_level = os.getenv("LOG_LEVEL", "INFO")
+        
         # Validate critical settings
         if not self.gemini_api_key:
             raise ValueError("GEMINI_API_KEY environment variable is required")

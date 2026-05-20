@@ -113,7 +113,7 @@ Always indicate which information comes from the provided documents."""
             self.metrics.total_answers += 1
             self.metrics.generation_times.append(generation_time)
             
-            logger.info(f"✅ Generated answer ({len(answer)} chars, {generation_time:.1f}ms)")
+            logger.info(f"[OK] Generated answer ({len(answer)} chars, {generation_time:.1f}ms)")
             return answer
             
         except Exception as e:
@@ -163,7 +163,7 @@ Always indicate which information comes from the provided documents."""
                 seen.add(key)
         
         self.metrics.citations_per_answer += len(citations)
-        logger.info(f"✅ Extracted {len(citations)} unique citations")
+        logger.info(f"[OK] Extracted {len(citations)} unique citations")
         return citations
     
     def calculate_confidence(
