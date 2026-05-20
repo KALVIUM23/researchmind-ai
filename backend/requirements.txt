@@ -10,9 +10,6 @@ pypdf==3.17.1
 pymupdf==1.23.8
 
 # LLM & AI
-langchain==0.1.14
-langchain-community==0.0.20
-langchain-google-genai==0.0.12
 google-generativeai==0.5.4
 
 # Embeddings & Vector DB
