@@ -110,6 +110,21 @@ class RetrievalService:
             # Normalize scores to 0-1 range
             ranked_chunks = self._normalize_scores(ranked_chunks)
             
+            # DEBUG: Print retrieved chunks to verify semantic retrieval is working
+            print("\n" + "="*80)
+            print("[DEBUG] RETRIEVED CHUNKS FROM VECTOR DB")
+            print("="*80)
+            print(f"Question: {question}")
+            print(f"Total chunks retrieved: {len(ranked_chunks)}")
+            for i, chunk in enumerate(ranked_chunks[:top_k], 1):
+                print(f"\n--- Chunk {i} ---")
+                print(f"Similarity Score: {chunk.get('similarity_score', 'N/A'):.4f}")
+                print(f"Source: {chunk.get('metadata', {}).get('source', 'Unknown')}")
+                print(f"Document ID: {chunk.get('metadata', {}).get('document_id', 'Unknown')}")
+                print(f"Text: {chunk.get('text', 'N/A')[:200]}...")
+            print("="*80 + "\n")
+            logger.info(f"[DEBUG] Retrieved {len(ranked_chunks)} chunks - showing first {min(top_k, len(ranked_chunks))} for question")
+            
             # Update metrics
             self.metrics.total_queries += 1
             self.metrics.total_chunks_retrieved += len(ranked_chunks)
@@ -123,7 +138,7 @@ class RetrievalService:
             self.metrics.processing_times.append(processing_time)
             
             logger.info(
-                f"✅ Retrieved {len(ranked_chunks)} chunks for question (strategy: {ranking_strategy.value}, "
+                f"[OK] Retrieved {len(ranked_chunks)} chunks for question (strategy: {ranking_strategy.value}, "
                 f"time: {processing_time:.1f}ms)"
             )
             return ranked_chunks[:top_k]
@@ -150,7 +165,7 @@ class RetrievalService:
             else:
                 self.metrics.deduplication_removals += 1
         
-        logger.info(f"Deduplication: {len(chunks)} → {len(unique_chunks)} chunks")
+        logger.info(f"Deduplication: {len(chunks)} -> {len(unique_chunks)} chunks")
         return unique_chunks
     
     def _rank_chunks(
