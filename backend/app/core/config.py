@@ -14,10 +14,17 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Load .env file
-env_file = Path(__file__).parent.parent.parent / ".env"
-if env_file.exists():
-    load_dotenv(env_file)
+# Load .env file - try multiple paths
+env_paths = [
+    Path(__file__).parent.parent.parent / ".env",  # From backend/app/core/config.py -> backend/.env
+    Path.cwd() / ".env",  # Current working directory
+    Path.cwd() / "backend" / ".env",  # If running from project root
+]
+
+for env_file in env_paths:
+    if env_file.exists():
+        load_dotenv(env_file, override=False)
+        break
 
 
 class Settings:
@@ -38,7 +45,7 @@ class Settings:
         self.host = os.getenv("HOST", "0.0.0.0")
         self.port = int(os.getenv("PORT", "8000"))
         
-        # Gemini API
+        # Gemini API - allow empty key for deployment
         self.gemini_api_key = os.getenv("GEMINI_API_KEY", "")
         self.gemini_model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
         
@@ -64,10 +71,6 @@ class Settings:
         
         # Logging
         self.log_level = os.getenv("LOG_LEVEL", "INFO")
-        
-        # Validate critical settings
-        if not self.gemini_api_key:
-            raise ValueError("GEMINI_API_KEY environment variable is required")
     
     @property
     def is_production(self) -> bool:
