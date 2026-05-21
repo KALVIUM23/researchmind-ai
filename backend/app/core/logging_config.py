@@ -8,7 +8,7 @@ Provides structured logging with appropriate levels for different modules.
 import logging
 import logging.config
 from pathlib import Path
-from app.core.config import get_settings
+from .config import get_settings
 
 settings = get_settings()
 

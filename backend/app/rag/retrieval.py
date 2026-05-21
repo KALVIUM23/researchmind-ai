@@ -2,8 +2,8 @@
 
 from typing import List, Dict, Any, Optional, Tuple
 from enum import Enum
-from app.rag.embeddings import EmbeddingsService
-from app.vectorstore.qdrant_store import VectorStoreService
+from .embeddings import EmbeddingsService
+from ..vectorstore.qdrant_store import VectorStoreService
 import logging
 from datetime import datetime
 from collections import defaultdict

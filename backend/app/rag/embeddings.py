@@ -5,13 +5,13 @@ from typing import List, Optional
 import logging
 import numpy as np
 
-from app.rag.embedding_cache import (
+from .embedding_cache import (
     BatchEmbeddingProcessor,
     MemoryEmbeddingCache,
     DiskEmbeddingCache,
     EmbeddingCache,
 )
-from app.rag.embedding_retry import (
+from .embedding_retry import (
     BatchEmbeddingWithRetry,
     RetryConfig,
     RetryStrategy,

@@ -6,8 +6,8 @@ import logging
 import os
 from pathlib import Path
 
-from app.services.parser_service import ParserService
-from app.utils.file_handler import generate_document_id, sanitize_filename
+from ..services.parser_service import ParserService
+from ..utils.file_handler import generate_document_id, sanitize_filename
 
 logger = logging.getLogger(__name__)
 

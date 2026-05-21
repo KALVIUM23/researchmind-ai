@@ -1,1 +1,1 @@
-web: sh -c "cd backend && exec python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"
+web: python -m uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT:-8080}

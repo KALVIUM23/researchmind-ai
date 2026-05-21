@@ -1,7 +1,7 @@
 """Question & Answer API Routes"""
 
 from fastapi import APIRouter, HTTPException, Depends
-from app.models.schemas import QuestionRequest, AnswerResponse
+from ..models.schemas import QuestionRequest, AnswerResponse
 import logging
 
 logger = logging.getLogger(__name__)

@@ -4,7 +4,7 @@ from typing import List, Dict, Any
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import logging
 
-from app.rag.chunk_management import (
+from .chunk_management import (
     EnhancedChunkMetadata,
     ChunkIdentifier,
     ChunkPositionTracker,

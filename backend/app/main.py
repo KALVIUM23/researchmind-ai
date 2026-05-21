@@ -5,18 +5,18 @@ from fastapi.middleware.cors import CORSMiddleware
 import logging
 from contextlib import asynccontextmanager
 
-from app.core.config import get_settings, Settings
-from app.core.logging_config import setup_logging, get_logger
-from app.rag.ingestion import PDFIngestionService
-from app.rag.chunking import ChunkingService
-from app.rag.embeddings import EmbeddingsService
-from app.rag.retrieval import RetrievalService
-from app.rag.answer_generation import AnswerGenerationService
-from app.vectorstore.qdrant_store import VectorStoreService
-from app.services.document_service import DocumentService, DocumentStore
-from app.services.answer_service import AnswerService
-from app.api import documents, questions
-from app.utils.logger import log_upload
+from .core.config import get_settings, Settings
+from .core.logging_config import setup_logging, get_logger
+from .rag.ingestion import PDFIngestionService
+from .rag.chunking import ChunkingService
+from .rag.embeddings import EmbeddingsService
+from .rag.retrieval import RetrievalService
+from .rag.answer_generation import AnswerGenerationService
+from .vectorstore.qdrant_store import VectorStoreService
+from .services.document_service import DocumentService, DocumentStore
+from .services.answer_service import AnswerService
+from .api import documents, questions
+from .utils.logger import log_upload
 
 # Setup logging
 setup_logging()
